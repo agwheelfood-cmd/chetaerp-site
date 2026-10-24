@@ -1,0 +1,336 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chetaa ERP: Tally-style accounting with an AI accountant</title>
+<meta name="description" content="Chetaa is Tally-style accounting software for Indian businesses: vouchers, GST returns, inventory with batches, bank statement import and an AI accountant that understands Hindi and English.">
+<link rel="icon" href="logo.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta property="og:title" content="Chetaa ERP">
+<meta property="og:description" content="Tally-style accounting, GST and inventory with an AI accountant. Works in the browser and on your phone.">
+<meta property="og:image" content="https://chetaarp.in/icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Devanagari:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#0b3b5c; --navy-2:#0f4c75; --amber:#fbbf24; --amber-d:#d97706;
+  --bg:#ffffff; --bg-2:#f5f8fb; --text:#0f172a; --muted:#526173; --line:#e2e8f0; --card:#ffffff;
+  --radius:16px; --shadow:0 10px 30px rgba(11,59,92,.10);
+}
+@media (prefers-color-scheme: dark){
+  :root{ --bg:#0a1520; --bg-2:#0f1e2c; --text:#e6edf3; --muted:#9fb0c0; --line:#1f3245; --card:#112334; --shadow:0 10px 30px rgba(0,0,0,.35); }
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;font-family:Inter,"Noto Sans Devanagari",system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
+html[lang=hi] body{font-family:"Noto Sans Devanagari",Inter,system-ui,sans-serif}
+a{color:inherit}
+.wrap{max-width:1120px;margin:0 auto;padding:0 20px}
+
+/* nav */
+header{position:sticky;top:0;z-index:10;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.nav{display:flex;align-items:center;gap:20px;height:64px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:20px;text-decoration:none}
+.brand img{width:34px;height:34px}
+.nav nav{display:flex;gap:22px;margin-left:auto}
+.nav nav a{text-decoration:none;color:var(--muted);font-weight:500;font-size:15px}
+.nav nav a:hover{color:var(--text)}
+.lang{border:1px solid var(--line);background:transparent;color:var(--text);border-radius:999px;padding:6px 12px;font:inherit;font-size:14px;cursor:pointer}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:12px 22px;border-radius:12px;font-weight:600;text-decoration:none;border:0;cursor:pointer;font-size:16px}
+.btn-primary{background:var(--amber);color:#0b3b5c}
+.btn-primary:hover{background:#f59e0b}
+.btn-ghost{border:1.5px solid currentColor}
+.btn-sm{padding:8px 16px;font-size:14px;border-radius:10px}
+@media (max-width:820px){ .nav nav{display:none} .nav .lang{margin-left:auto} }
+
+/* hero */
+.hero{background:radial-gradient(1200px 500px at 85% -10%,#155e8d 0,transparent 60%),linear-gradient(160deg,var(--navy),#072a42);color:#fff;padding:80px 0 90px;overflow:hidden}
+.hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:48px;align-items:center}
+.pill{display:inline-block;background:rgba(251,191,36,.15);color:var(--amber);border:1px solid rgba(251,191,36,.35);padding:5px 12px;border-radius:999px;font-size:13px;font-weight:600}
+.hero h1{font-size:clamp(34px,5vw,54px);line-height:1.1;margin:18px 0 18px;letter-spacing:-.02em}
+.hero h1 em{font-style:normal;color:var(--amber)}
+.hero p.lead{font-size:18px;color:#c9d8e6;max-width:540px;margin:0 0 30px}
+.hero .ctas{display:flex;gap:14px;flex-wrap:wrap}
+.hero .btn-ghost{color:#fff}
+.trust{display:flex;gap:22px;flex-wrap:wrap;margin-top:34px;color:#a9c1d6;font-size:14px}
+.trust span::before{content:"✓ ";color:var(--amber);font-weight:700}
+@media (max-width:900px){ .hero-grid{grid-template-columns:1fr} .hero{padding:56px 0 64px} }
+
+/* mock voucher */
+.mock{background:#fff;color:#0f172a;border-radius:18px;box-shadow:0 30px 60px rgba(0,0,0,.35);overflow:hidden;font-size:14px;transform:rotate(1deg)}
+.mock-top{background:#0f4c75;color:#fff;padding:10px 16px;display:flex;justify-content:space-between;font-weight:600;font-size:13px}
+.mock-top i{font-style:normal;opacity:.75;font-weight:400}
+.mock-body{padding:16px}
+.mrow{display:grid;grid-template-columns:42px 1fr 100px 100px;gap:8px;padding:8px 6px;border-bottom:1px dashed #e2e8f0}
+.mrow.h{font-weight:700;color:#526173;font-size:12px;text-transform:uppercase;letter-spacing:.04em;border-bottom:1px solid #cbd5e1}
+.mrow .r{text-align:right;font-variant-numeric:tabular-nums}
+.mrow.t{font-weight:700;border-bottom:0;background:#f5f8fb;border-radius:8px}
+.chat{margin:14px 0 0;display:grid;gap:8px}
+.bub{padding:9px 13px;border-radius:14px;max-width:85%;font-size:13.5px}
+.bub.u{background:#e8f1f8;justify-self:end;border-bottom-right-radius:4px}
+.bub.a{background:#fff7e0;border:1px solid #fde68a;border-bottom-left-radius:4px}
+
+/* sections */
+section{padding:84px 0}
+section.alt{background:var(--bg-2)}
+.eyebrow{color:var(--amber-d);font-weight:700;font-size:13px;letter-spacing:.08em;text-transform:uppercase}
+h2{font-size:clamp(28px,3.6vw,38px);line-height:1.2;margin:8px 0 14px;letter-spacing:-.01em}
+.sub{color:var(--muted);font-size:17px;max-width:680px;margin:0 0 40px}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+@media (max-width:900px){ .grid{grid-template-columns:1fr 1fr} }
+@media (max-width:600px){ .grid{grid-template-columns:1fr} section{padding:60px 0} }
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:24px;box-shadow:var(--shadow)}
+.card .ic{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;background:rgba(251,191,36,.16);font-size:22px;margin-bottom:14px}
+.card h3{margin:0 0 6px;font-size:18px}
+.card p{margin:0;color:var(--muted);font-size:15px}
+
+.split{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center}
+@media (max-width:900px){ .split{grid-template-columns:1fr} }
+.ticks{list-style:none;padding:0;margin:0;display:grid;gap:12px}
+.ticks li{padding-left:30px;position:relative}
+.ticks li::before{content:"✓";position:absolute;left:0;top:0;width:22px;height:22px;border-radius:50%;background:var(--navy);color:var(--amber);font-size:13px;display:grid;place-items:center;font-weight:700}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:22px;box-shadow:var(--shadow)}
+
+.keys{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+@media (max-width:700px){ .keys{grid-template-columns:repeat(2,1fr)} }
+.key{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px;font-size:15px}
+kbd{font-family:ui-monospace,Menlo,monospace;background:var(--navy);color:#fff;border-radius:7px;padding:3px 8px;font-size:13px;box-shadow:0 2px 0 #072a42;white-space:nowrap}
+
+.logos{display:flex;flex-wrap:wrap;gap:12px}
+.logos span{border:1px solid var(--line);background:var(--card);border-radius:999px;padding:8px 16px;font-weight:600;font-size:14px}
+
+details{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 20px;margin-bottom:12px}
+summary{font-weight:600;cursor:pointer;font-size:16px}
+details p{color:var(--muted);margin:10px 0 0}
+
+.cta{background:linear-gradient(135deg,var(--navy),#072a42);color:#fff;border-radius:24px;padding:56px 40px;text-align:center}
+.cta h2{color:#fff}
+.cta p{color:#c9d8e6;max-width:560px;margin:0 auto 28px;font-size:17px}
+
+footer{border-top:1px solid var(--line);padding:30px 0;color:var(--muted);font-size:14px}
+footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;align-items:center}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap nav">
+    <a class="brand" href="#"><img src="logo.svg" alt="">Chetaa</a>
+    <nav>
+      <a href="#features" data-t="nav_features">Features</a>
+      <a href="#gst" data-t="nav_gst">GST</a>
+      <a href="#ai" data-t="nav_ai">AI Accountant</a>
+      <a href="#import" data-t="nav_import">Import</a>
+      <a href="#faq" data-t="nav_faq">FAQ</a>
+    </nav>
+    <button class="lang" id="lang" type="button">हिंदी</button>
+    <a class="btn btn-primary btn-sm" href="https://books.agwheelai.in" data-t="login">Login</a>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <span class="pill" data-t="pill">Made for Indian businesses</span>
+      <h1 data-t="h1" data-html>Tally-style accounting, <em>with an AI accountant</em> beside you.</h1>
+      <p class="lead" data-t="lead">Vouchers, GST returns, inventory and bank statements in one place. Tell Chetaa what happened, in Hindi or English, and it prepares the entry for you to check.</p>
+      <div class="ctas">
+        <a class="btn btn-primary" href="https://books.agwheelai.in" data-t="cta_start">Open Chetaa →</a>
+        <a class="btn btn-ghost" href="#features" data-t="cta_see">See features</a>
+      </div>
+      <div class="trust">
+        <span data-t="trust1">Tally shortcut keys</span>
+        <span data-t="trust2">GSTR-1 &amp; GSTR-3B</span>
+        <span data-t="trust3">Works on phone</span>
+      </div>
+    </div>
+
+    <div class="mock" aria-hidden="true">
+      <div class="mock-top"><span>Sales Voucher No. 128</span><i>24-10-2026</i></div>
+      <div class="mock-body">
+        <div class="mrow h"><span></span><span>Particulars</span><span class="r">Debit</span><span class="r">Credit</span></div>
+        <div class="mrow"><span>Dr</span><span>Sharma Traders</span><span class="r">11,800.00</span><span class="r"></span></div>
+        <div class="mrow"><span>Cr</span><span>Sales 18%</span><span class="r"></span><span class="r">10,000.00</span></div>
+        <div class="mrow"><span>Cr</span><span>CGST 9%</span><span class="r"></span><span class="r">900.00</span></div>
+        <div class="mrow"><span>Cr</span><span>SGST 9%</span><span class="r"></span><span class="r">900.00</span></div>
+        <div class="mrow t"><span></span><span>Total</span><span class="r">11,800.00</span><span class="r">11,800.00</span></div>
+        <div class="chat">
+          <div class="bub u">Sharma Traders ko 10,000 ka maal becha, GST 18%</div>
+          <div class="bub a">Sales entry ready hai. Check karke Save dabayein ✓</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<section id="features">
+  <div class="wrap">
+    <div class="eyebrow" data-t="f_eyebrow">Everything you use daily</div>
+    <h2 data-t="f_h2">Full accounting, the way your accountant already works</h2>
+    <p class="sub" data-t="f_sub">Groups, ledgers, vouchers and reports work like Tally, so there is nothing new to learn. It runs in the browser, with nothing to install.</p>
+    <div class="grid">
+      <div class="card"><div class="ic">🧾</div><h3 data-t="c1h">Vouchers</h3><p data-t="c1p">Sales, Purchase, Receipt, Payment, Contra, Journal, Credit and Debit Notes, with bill-by-bill references.</p></div>
+      <div class="card"><div class="ic">📊</div><h3 data-t="c2h">Reports</h3><p data-t="c2p">Day Book, Ledger, Trial Balance, Profit &amp; Loss, Balance Sheet, receivables and payables. Drill down from any figure.</p></div>
+      <div class="card"><div class="ic">📦</div><h3 data-t="c3h">Inventory</h3><p data-t="c3p">Stock items with units, batches, expiry dates and godowns. Stock is valued batch by batch and never goes below zero.</p></div>
+      <div class="card"><div class="ic">🖨️</div><h3 data-t="c4h">Invoices &amp; PDFs</h3><p data-t="c4p">GST invoices with your logo, plus party statements and outstanding lists, ready to download as PDF.</p></div>
+      <div class="card"><div class="ic">👥</div><h3 data-t="c5h">Users &amp; roles</h3><p data-t="c5p">Owner, Accountant and view-only users. Give your CA or staff exactly the access they need.</p></div>
+      <div class="card"><div class="ic">📱</div><h3 data-t="c6h">Phone app</h3><p data-t="c6p">Install Chetaa on Android or iPhone from the browser. Check dues and balances on the go.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="gst" class="alt">
+  <div class="wrap split">
+    <div>
+      <div class="eyebrow" data-t="g_eyebrow">GST built in</div>
+      <h2 data-t="g_h2">Tax is worked out on every bill</h2>
+      <p class="sub" data-t="g_sub">Turn GST on from the date it applies. Chetaa fills in the tax on every bill, so your returns are ready when you are.</p>
+      <ul class="ticks">
+        <li data-t="g1">CGST + SGST or IGST from the place of supply</li>
+        <li data-t="g2">Item and ledger rate history: old bills keep their old rates</li>
+        <li data-t="g3">GSTR-1, GSTR-3B and HSN summary reports</li>
+        <li data-t="g4">GSTR-1 JSON for upload and GSTR-2B matching</li>
+        <li data-t="g5">Automatic round-off and party amount</li>
+      </ul>
+    </div>
+    <div class="panel">
+      <div class="mrow h"><span></span><span>GSTR-3B</span><span class="r">Taxable</span><span class="r">Tax</span></div>
+      <div class="mrow"><span>3.1</span><span>Outward supplies</span><span class="r">8,42,500</span><span class="r">1,51,650</span></div>
+      <div class="mrow"><span>4A</span><span>ITC available</span><span class="r">5,10,000</span><span class="r">91,800</span></div>
+      <div class="mrow"><span>4B</span><span>ITC reversed</span><span class="r">0</span><span class="r">0</span></div>
+      <div class="mrow t"><span></span><span>Net payable</span><span class="r"></span><span class="r">59,850</span></div>
+      <p style="color:var(--muted);font-size:13px;margin:12px 0 0" data-t="g_note">Sample figures</p>
+    </div>
+  </div>
+</section>
+
+<section id="ai">
+  <div class="wrap split">
+    <div class="panel">
+      <div class="chat">
+        <div class="bub u" data-t="ai_u1">Is mahine HDFC statement upload kiya hai, entries bana do</div>
+        <div class="bub a" data-t="ai_a1">49 entries ready: 44 party receipts against pending bills, 5 bank charges. 2 entries are already in the books, so I skipped them. Post karun?</div>
+        <div class="bub u" data-t="ai_u2">Haan. Aur M D Agro ka last bill PDF bhejo</div>
+        <div class="bub a" data-t="ai_a2">Ho gaya ✓ Invoice PDF yahan hai.</div>
+      </div>
+    </div>
+    <div>
+      <div class="eyebrow" data-t="ai_eyebrow">AI Accountant</div>
+      <h2 data-t="ai_h2">Talk to your books in plain words</h2>
+      <p class="sub" data-t="ai_sub">Write the way you speak: Hindi, Hinglish or English. The AI accountant finds the right ledgers and prepares the entry. Nothing is saved until you agree.</p>
+      <ul class="ticks">
+        <li data-t="ai1">Makes vouchers, new ledgers and stock items from one sentence</li>
+        <li data-t="ai2">Reads bank statements, bills and photos line by line</li>
+        <li data-t="ai3">Answers questions: dues, balances, last bill, profit</li>
+        <li data-t="ai4">Remembers the rules you teach it ("aage se rent ko Office Rent mein daalo")</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section id="import" class="alt">
+  <div class="wrap">
+    <div class="eyebrow" data-t="i_eyebrow">Easy to switch</div>
+    <h2 data-t="i_h2">Bring your existing data</h2>
+    <p class="sub" data-t="i_sub">Move your masters and entries from other software. Upload bank statements and Chetaa matches receipts against pending bills.</p>
+    <div class="logos">
+      <span>Tally XML</span><span>Busy</span><span>Marg</span><span>Chanakya</span><span>Excel</span><span>CSV</span><span data-t="i_bank">Bank statements (PDF / Excel / TXT)</span>
+    </div>
+
+    <h2 style="margin-top:64px" data-t="k_h2">Keys your fingers already know</h2>
+    <p class="sub" data-t="k_sub">The same shortcuts as Tally, so data entry stays fast.</p>
+    <div class="keys">
+      <div class="key"><kbd>F4</kbd> Contra</div>
+      <div class="key"><kbd>F5</kbd> Payment</div>
+      <div class="key"><kbd>F6</kbd> Receipt</div>
+      <div class="key"><kbd>F7</kbd> Journal</div>
+      <div class="key"><kbd>F8</kbd> Sales</div>
+      <div class="key"><kbd>F9</kbd> Purchase</div>
+      <div class="key"><kbd>Alt+G</kbd> Go To</div>
+      <div class="key"><kbd>Ctrl+A</kbd> Save</div>
+    </div>
+  </div>
+</section>
+
+<section id="faq">
+  <div class="wrap" style="max-width:820px">
+    <div class="eyebrow" data-t="q_eyebrow">Questions</div>
+    <h2 data-t="q_h2">Frequently asked</h2>
+    <details><summary data-t="q1">Do I need to install anything?</summary><p data-t="a1">No. Chetaa runs in your browser. On a phone you can add it to the home screen like an app.</p></details>
+    <details><summary data-t="q2">Is it like Tally?</summary><p data-t="a2">Yes. Groups, ledgers, voucher types, bill-wise details and the F4–F9 shortcuts work the way Tally users expect.</p></details>
+    <details><summary data-t="q3">Is my data separate from other companies?</summary><p data-t="a3">Yes. Each company's books are kept in a separate file, and only the users you give access to can open them.</p></details>
+    <details><summary data-t="q4">Does the AI post entries on its own?</summary><p data-t="a4">No. It prepares a preview with every Dr/Cr line. The entry is saved only when you agree.</p></details>
+    <details><summary data-t="q5">Can my CA use it too?</summary><p data-t="a5">Yes. Add your CA as a user with the role you choose. They can see the reports and GST returns directly.</p></details>
+  </div>
+</section>
+
+<section style="padding-top:0">
+  <div class="wrap">
+    <div class="cta">
+      <h2 data-t="cta_h2">Start keeping your books in Chetaa</h2>
+      <p data-t="cta_p">Create your company in a few minutes and enter your first voucher today.</p>
+      <a class="btn btn-primary" href="https://books.agwheelai.in" data-t="cta_start">Open Chetaa →</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <a class="brand" href="#"><img src="logo.svg" alt="" style="width:26px;height:26px">Chetaa</a>
+    <span>© <span id="yr">2026</span> Chetaa ERP · chetaarp.in</span>
+  </div>
+</footer>
+
+<script>
+const HI = {
+  nav_features:"फ़ीचर्स", nav_gst:"GST", nav_ai:"AI अकाउंटेंट", nav_import:"इम्पोर्ट", nav_faq:"सवाल", login:"लॉगिन",
+  pill:"भारतीय व्यापार के लिए बना",
+  h1:"Tally जैसी अकाउंटिंग, <em>साथ में AI अकाउंटेंट</em>।",
+  lead:"वाउचर, GST रिटर्न, स्टॉक और बैंक स्टेटमेंट, सब एक जगह। जो हुआ, हिंदी या अंग्रेज़ी में बताइए: Chetaa एंट्री बनाकर आपको जाँचने के लिए दिखाता है।",
+  cta_start:"Chetaa खोलें →", cta_see:"फ़ीचर्स देखें",
+  trust1:"Tally वाली शॉर्टकट कीज़", trust2:"GSTR-1 और GSTR-3B", trust3:"फ़ोन पर भी चलता है",
+  f_eyebrow:"रोज़ के सारे काम", f_h2:"पूरी अकाउंटिंग, जैसे आपका अकाउंटेंट पहले से करता है",
+  f_sub:"ग्रुप, लेजर, वाउचर और रिपोर्ट Tally की तरह चलते हैं, कुछ नया सीखना नहीं पड़ता। ब्राउज़र में चलता है, कुछ इंस्टॉल नहीं करना।",
+  c1h:"वाउचर", c1p:"Sales, Purchase, Receipt, Payment, Contra, Journal, Credit और Debit Note, बिल-वाइज़ रेफ़रेंस के साथ।",
+  c2h:"रिपोर्ट", c2p:"डे बुक, लेजर, ट्रायल बैलेंस, P&L, बैलेंस शीट, लेना-देना। किसी भी आँकड़े पर क्लिक करके अंदर देखें।",
+  c3h:"स्टॉक", c3p:"यूनिट, बैच, एक्सपायरी और गोडाउन के साथ आइटम। स्टॉक बैच-वाइज़ वैल्यू होता है, कभी माइनस में नहीं जाता।",
+  c4h:"इनवॉइस और PDF", c4p:"आपके लोगो के साथ GST इनवॉइस, पार्टी स्टेटमेंट और बकाया लिस्ट, PDF में डाउनलोड।",
+  c5h:"यूज़र और रोल", c5p:"Owner, Accountant और सिर्फ़ देखने वाले यूज़र। CA या स्टाफ़ को उतनी ही पहुँच दें जितनी ज़रूरी हो।",
+  c6h:"फ़ोन ऐप", c6p:"ब्राउज़र से Android या iPhone पर इंस्टॉल करें। चलते-फिरते बकाया और बैलेंस देखें।",
+  g_eyebrow:"GST पहले से अंदर", g_h2:"हर बिल पर टैक्स अपने-आप", g_sub:"जिस तारीख से GST लागू है, वहाँ से चालू करें। Chetaa हर बिल पर टैक्स भर देता है, रिटर्न तैयार रहते हैं।",
+  g1:"सप्लाई की जगह से CGST + SGST या IGST", g2:"आइटम और लेजर की रेट हिस्ट्री: पुराने बिल पुराने रेट पर रहते हैं",
+  g3:"GSTR-1, GSTR-3B और HSN समरी", g4:"अपलोड के लिए GSTR-1 JSON और GSTR-2B मिलान", g5:"राउंड-ऑफ़ और पार्टी अमाउंट अपने-आप", g_note:"नमूने के आँकड़े",
+  ai_eyebrow:"AI अकाउंटेंट", ai_h2:"अपनी किताबों से सीधी बात करें",
+  ai_sub:"जैसे बोलते हैं वैसे लिखिए: हिंदी, हिंग्लिश या अंग्रेज़ी। AI अकाउंटेंट सही लेजर ढूँढकर एंट्री तैयार करता है, और आपकी हाँ के बिना कुछ सेव नहीं होता।",
+  ai1:"एक वाक्य से वाउचर, नए लेजर और आइटम", ai2:"बैंक स्टेटमेंट, बिल और फ़ोटो लाइन-दर-लाइन पढ़ता है",
+  ai3:"सवालों के जवाब: बकाया, बैलेंस, आख़िरी बिल, मुनाफ़ा", ai4:"आपके सिखाए नियम याद रखता है (\"आगे से किराया Office Rent में डालो\")",
+  ai_a1:"49 एंट्री तैयार: 44 पार्टी रसीदें पेंडिंग बिलों के सामने, 5 बैंक चार्ज। 2 एंट्री पहले से किताबों में थीं, इसलिए छोड़ दीं। पोस्ट करूँ?",
+  i_eyebrow:"बदलना आसान", i_h2:"अपना पुराना डेटा लाइए", i_sub:"दूसरे सॉफ़्टवेयर से मास्टर और एंट्री लाइए। बैंक स्टेटमेंट अपलोड करें, Chetaa रसीदों को पेंडिंग बिलों से मिलाता है।",
+  i_bank:"बैंक स्टेटमेंट (PDF / Excel / TXT)", k_h2:"वही कीज़ जो उँगलियों को याद हैं", k_sub:"Tally वाले शॉर्टकट, ताकि एंट्री तेज़ रहे।",
+  q_eyebrow:"सवाल", q_h2:"अक्सर पूछे जाने वाले सवाल",
+  q1:"क्या कुछ इंस्टॉल करना होगा?", a1:"नहीं। Chetaa ब्राउज़र में चलता है। फ़ोन पर इसे ऐप की तरह होम स्क्रीन पर जोड़ सकते हैं।",
+  q2:"क्या यह Tally जैसा है?", a2:"हाँ। ग्रुप, लेजर, वाउचर टाइप, बिल-वाइज़ डिटेल और F4–F9 शॉर्टकट वैसे ही चलते हैं जैसे Tally में।",
+  q3:"क्या मेरा डेटा दूसरी कंपनियों से अलग रहता है?", a3:"हाँ। हर कंपनी की किताबें अलग फ़ाइल में रहती हैं, और उन्हें सिर्फ़ वही यूज़र खोल सकते हैं जिन्हें आप पहुँच दें।",
+  q4:"क्या AI अपने-आप एंट्री पोस्ट करता है?", a4:"नहीं। वह हर Dr/Cr लाइन के साथ प्रीव्यू दिखाता है; आपकी हाँ के बाद ही एंट्री सेव होती है।",
+  q5:"क्या मेरा CA भी इसे इस्तेमाल कर सकता है?", a5:"हाँ। अपने CA को आपका चुना रोल देकर यूज़र बनाइए, वे रिपोर्ट और GST रिटर्न सीधे देख सकते हैं।",
+  cta_h2:"अपनी किताबें Chetaa में रखना शुरू करें", cta_p:"कुछ मिनटों में अपनी कंपनी बनाइए और आज ही पहला वाउचर डालिए।"
+};
+const nodes = [...document.querySelectorAll("[data-t]")];
+nodes.forEach(n => n.dataset.en = n.dataset.html !== undefined ? n.innerHTML : n.textContent);
+function setLang(l){
+  document.documentElement.lang = l;
+  nodes.forEach(n => {
+    const v = l === "hi" ? (HI[n.dataset.t] ?? n.dataset.en) : n.dataset.en;
+    if (n.dataset.html !== undefined) n.innerHTML = v; else n.textContent = v;
+  });
+  document.getElementById("lang").textContent = l === "hi" ? "English" : "हिंदी";
+  try { localStorage.setItem("lang", l); } catch (e) {}
+}
+document.getElementById("lang").onclick = () => setLang(document.documentElement.lang === "hi" ? "en" : "hi");
+try { if (localStorage.getItem("lang") === "hi") setLang("hi"); } catch (e) {}
+document.getElementById("yr").textContent = new Date().getFullYear();
+</script>
+</body>
+</html>
