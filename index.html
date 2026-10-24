@@ -63,7 +63,7 @@ header{position:sticky;top:0;z-index:10;background:color-mix(in srgb,var(--bg) 8
 .mock-top{background:#0f4c75;color:#fff;padding:10px 16px;display:flex;justify-content:space-between;font-weight:600;font-size:13px}
 .mock-top i{font-style:normal;opacity:.75;font-weight:400}
 .mock-body{padding:16px}
-.mrow{display:grid;grid-template-columns:42px 1fr 100px 100px;gap:8px;padding:8px 6px;border-bottom:1px dashed #e2e8f0}
+.mrow{display:grid;grid-template-columns:34px minmax(0,1fr) minmax(76px,auto) minmax(76px,auto);gap:8px;padding:8px 6px;border-bottom:1px dashed #e2e8f0}
 .mrow.h{font-weight:700;color:#526173;font-size:12px;text-transform:uppercase;letter-spacing:.04em;border-bottom:1px solid #cbd5e1}
 .mrow .r{text-align:right;font-variant-numeric:tabular-nums}
 .mrow.t{font-weight:700;border-bottom:0;background:#f5f8fb;border-radius:8px}
@@ -87,7 +87,9 @@ h2{font-size:clamp(28px,3.6vw,38px);line-height:1.2;margin:8px 0 14px;letter-spa
 .card p{margin:0;color:var(--muted);font-size:15px}
 
 .split{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center}
+.split>*,.hero-grid>*{min-width:0}
 @media (max-width:900px){ .split{grid-template-columns:1fr} }
+@media (max-width:480px){ .mrow{grid-template-columns:24px minmax(0,1fr) auto auto;font-size:12.5px;gap:6px} .mock{transform:none} .btn-sm{padding:7px 12px} }
 .ticks{list-style:none;padding:0;margin:0;display:grid;gap:12px}
 .ticks li{padding-left:30px;position:relative}
 .ticks li::before{content:"✓";position:absolute;left:0;top:0;width:22px;height:22px;border-radius:50%;background:var(--navy);color:var(--amber);font-size:13px;display:grid;place-items:center;font-weight:700}
